@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name              BiliBili播放页调整
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.2
+// @version           0.2.1
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -177,7 +177,7 @@ $(function() {
                 let html =
                   `
                       <div style="font-size: 1em;">
-                        <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper" style="padding-top:0"><span>播放器顶部偏移(px)</span><input  id="Top-Offset" value="${util.getValue('top_offset')}" style="padding:5px;width: 200px;"></label>
+                        <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper" style="padding-top:0"><span>播放器顶部偏移(px)</span><input  id="Top-Offset" value="${util.getValue('top_offset')}" style="padding:5px;width: 200px;border: 1px solid #cecece;"></label>
                         <span class="player-adjustment-setting-tips">播放器顶部与浏览器窗口留白距离</span>
                         <label class="player-adjustment-setting-label">点击播放器时定位<input type="checkbox" id="Click-Player-Auto-Location" ${util.getValue('click_player_auto_location') ? 'checked' : ''} class="player-adjustment-setting-checkbox" style="width:auto!important;"></label>
                         <div class="player-adjustment-setting-label" style="display: flex;align-items: center;justify-content: space-between;">播放器默认模式
@@ -188,7 +188,7 @@ $(function() {
                          </div>
                         </div>
                         <label class="player-adjustment-setting-label">自动选择最高画质<input type="checkbox" id="Auto-Quality" ${util.getValue('auto_select_video_highest_quality') ? 'checked' : ''} class="player-adjustment-setting-checkbox" style="width:auto!important;"></label>
-                        <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper"><span>脚本延迟执行时间(ms)</span><input  id="Delay-Time"  value="${util.getValue('delay')}" style="padding:5px;width: 200px;"></label>
+                        <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper"><span>脚本延迟执行时间(ms)</span><input  id="Delay-Time"  value="${util.getValue('delay')}" style="padding:5px;width: 200px;border: 1px solid #cecece;"></label>
                         <span class="player-adjustment-setting-tips">设置延迟防止脚本在播放器未加载时就运行，导致失效，该项视当前网络环境调整</span>
                       </div>
                       `;
@@ -227,6 +227,8 @@ $(function() {
             .swal2-popup{width: 34em;}
             .swal2-html-container{margin: 0;padding: 10px;width: 100%;box-sizing: border-box;}
             .swal2-close{top: 5px;right: 3px;}
+            .swal2-actions{margin: 7px auto 0;}
+            .swal2-icon.swal2-info.swal2-icon-show{display: none !important;}
             .player-adjustment-container,.swal2-container { z-index: 999999999!important }
             .player-adjustment-popup { font-size: 14px !important }
             .player-adjustment-setting-label { display: flex;align-items: center;justify-content: space-between;padding-top: 20px; }
