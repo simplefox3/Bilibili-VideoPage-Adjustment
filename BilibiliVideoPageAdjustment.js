@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name              BiliBili播放页调整
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.2.2
+// @version           0.2.3
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -189,7 +189,7 @@ $(function() {
                         </div>
                         <label class="player-adjustment-setting-label">自动选择最高画质<input type="checkbox" id="Auto-Quality" ${util.getValue('auto_select_video_highest_quality') ? 'checked' : ''} class="player-adjustment-setting-checkbox" style="width:auto!important;"></label>
                         <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper"><span>脚本延迟执行时间(ms)</span><input  id="Delay-Time"  value="${util.getValue('delay')}" style="padding:5px;width: 200px;border: 1px solid #cecece;"></label>
-                        <span class="player-adjustment-setting-tips"> -> 设置延迟防止脚本在播放器未完全加载时就运行，导致脚本失效，该项视当前网络环境调整。通常需要多次调整才能达到满意效果。</span>
+                        <span class="player-adjustment-setting-tips" style="flex-direction: column;"><span style="padding-bottom: 5px;margin-bottom: 3px;border-bottom: 1px solid #cecece;"> -> 设置延迟防止脚本在播放器未完全加载时就运行，导致脚本失效，该项视当前网络环境调整。通常需要多次调整才能达到满意效果。</span><span style="color:red"> -> 普通视频播放页与番剧播放页播放器不同，请以番剧播放页播放器加载时机为准，这样二者可以兼顾，但对普通视频播放页来说脚本延迟时间可能会稍微有些长。</span></span>
                       </div>
                       `;
                 Swal.fire({
