@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name              BiliBili播放页调整
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.2.3
+// @version           0.2.4
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -23,8 +23,8 @@ $(function() {
         setValue(name, value) {
             GM_setValue(name, value);
         },
-        exist(id){
-           return Boolean($(id).length>=1)
+        exist(id) {
+            return Boolean($(id).length >= 1)
         },
         addStyle(id, tag, css) {
             tag = tag || 'style';
@@ -46,7 +46,7 @@ $(function() {
             }, {
                 name: 'click_player_auto_location',
                 value: true
-            },{
+            }, {
                 name: 'current_screen_mod',
                 value: 'normal'
             }, {
@@ -68,17 +68,17 @@ $(function() {
         autoLocation() {
             let top_offset = util.getValue('top_offset')
             let click_player_auto_location = util.getValue('click_player_auto_location')
-            if(util.exist('#bilibiliPlayer')){
+            if (util.exist('#bilibiliPlayer')) {
                 $('html,body').scrollTop($('#bilibiliPlayer').offset().top - top_offset);
-                if(click_player_auto_location){
+                if (click_player_auto_location) {
                     $('#bilibiliPlayer').on('click', function() {
                         $('html,body').scrollTop($('#bilibiliPlayer').offset().top - top_offset);
                     });
                 }
             }
-            if(util.exist('#bilibili-player')){
+            if (util.exist('#bilibili-player')) {
                 $('html,body').scrollTop($('#bilibili-player').offset().top - top_offset);
-                if(click_player_auto_location){
+                if (click_player_auto_location) {
                     $('#bilibili-player').on('click', function() {
                         $('html,body').scrollTop($('#bilibili-player').offset().top - top_offset);
                     });
@@ -86,7 +86,7 @@ $(function() {
             }
         },
         getCurrentScreenMod() {
-            if (util.exist('#bilibiliPlayer')){
+            if (util.exist('#bilibiliPlayer')) {
                 const playerClass = $('#bilibiliPlayer').attr('class');
                 let mutationObserver = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
@@ -102,17 +102,17 @@ $(function() {
                     attributes: true,
                 });
             }
-            if (util.exist('#bilibili-player')){
+            if (util.exist('#bilibili-player')) {
                 const playerDataScreen = $('#bilibili-player .bpx-player-container').attr('data-screen');
                 let mutationObserver = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        if (playerDataScreen==='normal') {
+                        if (playerDataScreen === 'normal') {
                             util.setValue('current_screen_mod', 'normal')
                         }
-                        if (playerDataScreen==='wide') {
+                        if (playerDataScreen === 'wide') {
                             util.setValue('current_screen_mod', 'widescreen')
                         }
-                        if (playerDataScreen==='web') {
+                        if (playerDataScreen === 'web') {
                             util.setValue('current_screen_mod', 'webfullscreen')
                         }
                     });
@@ -126,48 +126,36 @@ $(function() {
             let current_screen_mod = util.getValue('current_screen_mod')
             let selected_screen_mod = util.getValue('selected_screen_mod')
             console.log(current_screen_mod, selected_screen_mod);
-            if (util.exist('#bilibili-player')){
-                if (selected_screen_mod === 'normal') {
-                    if (current_screen_mod !== 'normal') {
-                        $('.bilibili-player-video-btn.closed').click();
-                    }
+            if (util.exist('#bilibili-player')) {
+                if (selected_screen_mod === 'normal' && current_screen_mod !== 'normal') {
+                    $('.bilibili-player-video-btn.closed').click();
                 }
-                if (selected_screen_mod === 'widescreen') {
-                    if (current_screen_mod !== 'widescreen') {
-                        $('.bilibili-player-video-btn.bilibili-player-video-btn-widescreen').click();
-                    }
+                if (selected_screen_mod === 'widescreen' && current_screen_mod !== 'widescreen') {
+                    $('.bilibili-player-video-btn.bilibili-player-video-btn-widescreen').click();
                 }
-                if (selected_screen_mod === 'webfullscreen') {
-                    if (current_screen_mod !== 'webfullscreen') {
-                        $('.bilibili-player-video-btn.bilibili-player-video-web-fullscreen').click();
-                    }
+                if (selected_screen_mod === 'webfullscreen' && current_screen_mod !== 'webfullscreen') {
+                    $('.bilibili-player-video-btn.bilibili-player-video-web-fullscreen').click();
                 }
             }
-            if (util.exist('#bilibili-player')){
-                if (selected_screen_mod === 'normal') {
-                    if (current_screen_mod !== 'normal') {
-                        $('.squirtle-controller-wrap-right .squirtle-video-item.active').click();
-                    }
+            if (util.exist('#bilibili-player')) {
+                if (selected_screen_mod === 'normal' && current_screen_mod !== 'normal') {
+                    $('.squirtle-controller-wrap-right .squirtle-video-item.active').click();
                 }
-                if (selected_screen_mod === 'widescreen') {
-                    if (current_screen_mod !== 'widescreen') {
-                        $('.squirtle-widescreen-wrap .squirtle-video-widescreen').click();
-                    }
+                if (selected_screen_mod === 'widescreen' && current_screen_mod !== 'widescreen') {
+                    $('.squirtle-widescreen-wrap .squirtle-video-widescreen').click();
                 }
-                if (selected_screen_mod === 'webfullscreen') {
-                    if (current_screen_mod !== 'webfullscreen') {
-                        $('.squirtle-pagefullscreen-wrap.squirtle-video-pagefullscreen').click();
-                    }
+                if (selected_screen_mod === 'webfullscreen' && current_screen_mod !== 'webfullscreen') {
+                    $('.squirtle-pagefullscreen-wrap.squirtle-video-pagefullscreen').click();
                 }
             }
         },
         autoSelectVideoHightestQuality() {
             let auto_select_video_highest_quality = util.getValue('auto_select_video_highest_quality')
             if (auto_select_video_highest_quality) {
-                if (util.exist('#bilibiliPlayer')){
+                if (util.exist('#bilibiliPlayer')) {
                     $('.bui-select-list-wrap > ul > li').eq(0).click();
                 }
-                if (util.exist('#bilibili-player')){
+                if (util.exist('#bilibili-player')) {
                     $('.squirtle-quality-wrap >.squirtle-video-quality > ul > li').eq(0).click();
                 }
             }
@@ -175,7 +163,7 @@ $(function() {
         registerMenuCommand() {
             GM_registerMenuCommand('设置', () => {
                 let html =
-                  `
+                    `
                       <div style="font-size: 1em;">
                         <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper" style="padding-top:0"><span>播放器顶部偏移(px)</span><input  id="Top-Offset" value="${util.getValue('top_offset')}" style="padding:5px;width: 200px;border: 1px solid #cecece;"></label>
                         <span class="player-adjustment-setting-tips"> -> 播放器顶部与浏览器窗口留白距离</span>
