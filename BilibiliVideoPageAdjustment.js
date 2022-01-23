@@ -231,7 +231,6 @@ $(function() {
             return window.self === window.top;
         },
         init() {
-            const delay = util.getValue('delay')
             this.initValue();
             this.addPluginStyle();
             this.getCurrentScreenMod();
