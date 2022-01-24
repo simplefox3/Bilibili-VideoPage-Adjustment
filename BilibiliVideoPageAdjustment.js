@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.4.3
+// @version           0.4.4
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -186,7 +186,7 @@ $(function() {
                     showDenyButton: true,
                     confirmButtonText: '保存',
                     denyButtonText: '重置',
-                    footer: '<div style="text-align: center;font-size: 1.25em;"><a href="//userstyles.world/style/241/nightmode-for-bilibili-com" target="_blank">夜间哔哩 - </a><a href="//greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8" target="_blank">检查更新</a></div>',
+                    footer: '<div style="text-align: center;font-size: 1.25em;"><a href="//userstyles.world/style/241/nightmode-for-bilibili-com" target="_blank">夜间哔哩 - </a><a href="//greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8" target="_blank">检查更新</a></div><hr style="text-align: center;border: none;height: 1px;margin: 5px 0;background: #eaeaea;"><div>如果发现脚本不能用，说明你的播放页面已经更新为新版。<br>目前此脚本不适用新版播放页面， 因为我的两个号都还没收到新版播放页面的推送， 所以暂时没法适配， 等我收到更新后会第一时间适配。</dfv>',
                 }).then((res) => {
                     res.isConfirmed && location.reload(true);
                     if (result.isConfirmed) {
@@ -217,6 +217,7 @@ $(function() {
             let style = `
             .swal2-popup{width: 34em;}
             .swal2-html-container{margin: 0;padding: 16px 5px 0;width: 100%;box-sizing: border-box;}
+            .swal2-footer{flex-direction: column;}
             .swal2-close{top: 5px;right: 3px;}
             .swal2-actions{margin: 7px auto 0;}
             .swal2-icon.swal2-info.swal2-icon-show{display: none !important;}
