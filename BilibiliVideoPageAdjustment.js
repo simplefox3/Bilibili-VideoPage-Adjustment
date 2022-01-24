@@ -273,7 +273,7 @@ $(function() {
             this.addPluginStyle();
             this.getCurrentScreenMod();
             this.applySetting();
-            this.isTopWindow()&&this.registerMenuCommand();
+            this.isTopWindow() && this.registerMenuCommand();
             window.history.pushState = function() {
                 main.applySetting();
             };
