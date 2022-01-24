@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.4.1
+// @version           0.4.3
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -121,20 +121,21 @@ $(function() {
         autoSelectScreenMod() {
             let current_screen_mod = util.getValue('current_screen_mod')
             let selected_screen_mod = util.getValue('selected_screen_mod')
-                // console.log(current_screen_mod, selected_screen_mod);
             if (util.exist('#playerWrap #bilibiliPlayer')) {
+                // console.log('a', current_screen_mod, selected_screen_mod);
                 const playerClass = $('#bilibiliPlayer').attr('class');
                 if (selected_screen_mod === 'normal' && current_screen_mod !== 'normal') {
                     $('.bilibili-player-video-btn.closed').click();
                 }
                 if ((selected_screen_mod === 'widescreen' && current_screen_mod !== 'widescreen') && !playerClass.includes('mode-widescreen')) {
-                    $('.bilibili-player-video-btn.bilibili-player-video-btn-widescreen').click();
+                    $('[data-text="宽屏模式"]').click();
                 }
                 if ((selected_screen_mod === 'webfullscreen' && current_screen_mod !== 'webfullscreen') && !playerClass.includes('mode-webfullscreen')) {
-                    $('.bilibili-player-video-btn.bilibili-player-video-web-fullscreen').click();
+                    $('[data-text="进入全屏"]').click();
                 }
             }
             if (util.exist('#player_module #bilibili-player')) {
+                // console.log('b', current_screen_mod, selected_screen_mod);
                 const playerDataScreen = $('#bilibili-player .bpx-player-container').attr('data-screen');
                 if (selected_screen_mod === 'normal' && current_screen_mod !== 'normal') {
                     $('.squirtle-controller-wrap-right .squirtle-video-item.active').click();
@@ -173,6 +174,7 @@ $(function() {
                           <label><input type="radio" name="Screen-Mod" value="webfullscreen" ${util.getValue('selected_screen_mod')==='webfullscreen' ? 'checked' : ''}>网页全屏</label>
                          </div>
                         </div>
+  <span class="player-adjustment-setting-tips"> -> 若遇到不能自动选择播放器模式可尝试点击重置</span>
                         <label class="player-adjustment-setting-label">自动选择最高画质<input type="checkbox" id="Auto-Quality" ${util.getValue('auto_select_video_highest_quality') ? 'checked' : ''} class="player-adjustment-setting-checkbox" style="width:auto!important;"></label>
                       </div>
                       `;
@@ -181,10 +183,18 @@ $(function() {
                     html,
                     icon: 'info',
                     showCloseButton: true,
+                    showDenyButton: true,
                     confirmButtonText: '保存',
+                    denyButtonText: '重置',
                     footer: '<div style="text-align: center;font-size: 1.25em;"><a href="//userstyles.world/style/241/nightmode-for-bilibili-com" target="_blank">夜间哔哩 - </a><a href="//greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8" target="_blank">检查更新</a></div>',
                 }).then((res) => {
                     res.isConfirmed && location.reload(true);
+                    if (result.isConfirmed) {
+                        location.reload(true)
+                    } else if (result.isDenied) {
+                        util.setValue('current_screen_mod', 'normal');
+                        location.reload(true);
+                    }
                 });
 
                 $('#Top-Offset').change((e) => {
@@ -206,7 +216,7 @@ $(function() {
         addPluginStyle() {
             let style = `
             .swal2-popup{width: 34em;}
-            .swal2-html-container{margin: 0;padding: 16px 20px 0;width: 100%;box-sizing: border-box;}
+            .swal2-html-container{margin: 0;padding: 16px 5px 0;width: 100%;box-sizing: border-box;}
             .swal2-close{top: 5px;right: 3px;}
             .swal2-actions{margin: 7px auto 0;}
             .swal2-icon.swal2-info.swal2-icon-show{display: none !important;}
