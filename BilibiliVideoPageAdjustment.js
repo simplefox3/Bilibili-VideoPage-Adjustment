@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.4.7
+// @version           0.4.8
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -187,7 +187,7 @@ $(function() {
                 let html =
                     `
                     <div style="font-size: 1em;">
-                        <label class="player-adjustment-setting-label" style="padding-top:0">
+                        <label class="player-adjustment-setting-label" style="padding-top:0!important;">
                             是否为大会员
                             <input type="checkbox" id="Is-Vip" ${util.getValue('is_vip') ? 'checked' : '' } class="player-adjustment-setting-checkbox"  >
                         </label>
@@ -205,15 +205,15 @@ $(function() {
                             style="display: flex;align-items: center;justify-content: space-between;">
                             播放器默认模式
                             <div style="width: 215px;display: flex;align-items: center;justify-content: space-between;">
-                                <label class="player-adjustment-setting-label">
+                                <label class="player-adjustment-setting-label" style="padding-top:0!important;">
                                     <input type="radio" name="Screen-Mod" value="normal" ${util.getValue('selected_screen_mod')==='normal' ? 'checked' : '' }>
                                     小屏
                                 </label>
-                                <label class="player-adjustment-setting-label">
+                                <label class="player-adjustment-setting-label" style="padding-top:0!important;">
                                     <input type="radio" name="Screen-Mod" value="widescreen" ${util.getValue('selected_screen_mod')==='widescreen' ? 'checked' : '' }
                                     >宽屏
                                 </label>
-                                <label class="player-adjustment-setting-label">
+                                <label class="player-adjustment-setting-label" style="padding-top:0!important;">
                                     <input type="radio" name="Screen-Mod" value="webfullscreen" ${util.getValue('selected_screen_mod')==='webfullscreen' ? 'checked' : '' }>
                                     网页全屏
                                 </label>
