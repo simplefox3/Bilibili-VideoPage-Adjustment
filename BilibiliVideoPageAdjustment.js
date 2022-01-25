@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.4.6
+// @version           0.4.7
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -27,7 +27,7 @@ $(function() {
             GM_setValue(name, value);
         },
         exist(selecter) {
-            return Boolean($(selecter).length >= 1)
+            return $(selecter).length >= 1
         },
         addStyle(id, tag, css) {
             tag = tag || 'style';
@@ -46,6 +46,9 @@ $(function() {
             let value = [{
                 name: 'top_offset',
                 value: 7
+            }, {
+                name: 'is_vip',
+                value: false
             }, {
                 name: 'click_player_auto_location',
                 value: true
@@ -84,6 +87,14 @@ $(function() {
                     });
                 }
             }
+        },
+        getUserVipState() {
+            if (util.exist('.bili-avatar-icon--big-vip')) {
+                util.setValue('is_vip', true)
+            } else {
+                util.setValue('is_vip', false)
+            }
+            console.log(util.getValue('is_vip'))
         },
         getCurrentScreenMod() {
             if (util.exist('#playerWrap #bilibiliPlayer')) {
@@ -131,7 +142,7 @@ $(function() {
                     $('[data-text="宽屏模式"]').click();
                 }
                 if ((selected_screen_mod === 'webfullscreen' && current_screen_mod !== 'webfullscreen') && !playerClass.includes('mode-webfullscreen')) {
-                    $('[data-text="进入全屏"]').click();
+                    $('[data-text="网页全屏"]').click();
                 }
             }
             if (util.exist('#player_module #bilibili-player')) {
@@ -149,13 +160,25 @@ $(function() {
             }
         },
         autoSelectVideoHightestQuality() {
-            let auto_select_video_highest_quality = util.getValue('auto_select_video_highest_quality')
+            let is_vip = util.getValue('is_vip');
+            let auto_select_video_highest_quality = util.getValue('auto_select_video_highest_quality');
             if (auto_select_video_highest_quality) {
-                if (util.exist('#playerWrap #bilibiliPlayer')) {
-                    $('.bui-select-list-wrap > ul > li').eq(0).click();
-                }
-                if (util.exist('#player_module #bilibili-player')) {
-                    $('.squirtle-quality-wrap >.squirtle-video-quality > ul > li').eq(0).click();
+                if (is_vip) {
+                    if (util.exist('#playerWrap #bilibiliPlayer')) {
+                        $('.bui-select-list-wrap > ul > li').eq(0).click();
+                    }
+                    if (util.exist('#player_module #bilibili-player')) {
+                        $('.squirtle-quality-wrap >.squirtle-video-quality > ul > li').eq(0).click();
+                    }
+                } else {
+                    if (util.exist('#playerWrap #bilibiliPlayer')) {
+                        const selectVipItemLength = $('.bui-select-list-wrap > ul > li').children('.bilibili-player-bigvip').length;
+                        $('.bui-select-list-wrap > ul > li').eq(selectVipItemLength).click();
+                    }
+                    if (util.exist('#player_module #bilibili-player')) {
+                        const selectVipItemLength = $('.squirtle-quality-wrap >.squirtle-video-quality > ul > li').children('.squirtle-bigvip').length;
+                        $('.squirtle-quality-wrap >.squirtle-video-quality > ul > li').eq(selectVipItemLength).click();
+                    }
                 }
             }
         },
@@ -163,21 +186,46 @@ $(function() {
             GM_registerMenuCommand('设置', () => {
                 let html =
                     `
-                      <div style="font-size: 1em;">
-                        <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper" style="padding-top:0"><span>播放器顶部偏移(px)</span><input  id="Top-Offset" value="${util.getValue('top_offset')}" style="padding:5px;width: 200px;border: 1px solid #cecece;"></label>
-                        <span class="player-adjustment-setting-tips"> -> 播放器顶部与浏览器窗口留白距离</span>
-                        <label class="player-adjustment-setting-label">点击播放器时定位<input type="checkbox" id="Click-Player-Auto-Location" ${util.getValue('click_player_auto_location') ? 'checked' : ''} class="player-adjustment-setting-checkbox" style="width:auto!important;"></label>
-                        <div class="player-adjustment-setting-label" style="display: flex;align-items: center;justify-content: space-between;">播放器默认模式
-                        <div style="width: 215px;display: flex;align-items: center;justify-content: space-between;">
-                          <label><input type="radio" name="Screen-Mod" value="normal" ${util.getValue('selected_screen_mod')==='normal' ? 'checked' : ''}>小屏</label>
-                          <label><input type="radio" name="Screen-Mod" value="widescreen" ${util.getValue('selected_screen_mod')==='widescreen' ? 'checked' : ''}>宽屏</label>
-                          <label><input type="radio" name="Screen-Mod" value="webfullscreen" ${util.getValue('selected_screen_mod')==='webfullscreen' ? 'checked' : ''}>网页全屏</label>
-                         </div>
+                    <div style="font-size: 1em;">
+                        <label class="player-adjustment-setting-label" style="padding-top:0">
+                            是否为大会员
+                            <input type="checkbox" id="Is-Vip" ${util.getValue('is_vip') ? 'checked' : '' } class="player-adjustment-setting-checkbox"  >
+                        </label>
+                        <span class="player-adjustment-setting-tips"> -> 请如实勾选，否则影响自动选择清晰度</span>
+                        <label class="player-adjustment-setting-label" id="player-adjustment-Range-Wrapper">
+                            <span>播放器顶部偏移(px)</span>
+                            <input id="Top-Offset" value="${util.getValue('top_offset')}" style="padding:5px;width: 200px;border: 1px solid #cecece;">
+                        </label>
+                        <span class="player-adjustment-setting-tips"> -> 参考值：顶部导航栏吸顶时为 71 ，否则为 7</span>
+                        <label class="player-adjustment-setting-label">
+                            点击播放器时定位
+                            <input type="checkbox" id="Click-Player-Auto-Location" ${util.getValue('click_player_auto_location') ? 'checked' : '' }  class="player-adjustment-setting-checkbox" >
+                        </label>
+                        <div class="player-adjustment-setting-label"
+                            style="display: flex;align-items: center;justify-content: space-between;">
+                            播放器默认模式
+                            <div style="width: 215px;display: flex;align-items: center;justify-content: space-between;">
+                                <label class="player-adjustment-setting-label">
+                                    <input type="radio" name="Screen-Mod" value="normal" ${util.getValue('selected_screen_mod')==='normal' ? 'checked' : '' }>
+                                    小屏
+                                </label>
+                                <label class="player-adjustment-setting-label">
+                                    <input type="radio" name="Screen-Mod" value="widescreen" ${util.getValue('selected_screen_mod')==='widescreen' ? 'checked' : '' }
+                                    >宽屏
+                                </label>
+                                <label class="player-adjustment-setting-label">
+                                    <input type="radio" name="Screen-Mod" value="webfullscreen" ${util.getValue('selected_screen_mod')==='webfullscreen' ? 'checked' : '' }>
+                                    网页全屏
+                                </label>
+                            </div>
                         </div>
-  <span class="player-adjustment-setting-tips"> -> 若遇到不能自动选择播放器模式可尝试点击重置</span>
-                        <label class="player-adjustment-setting-label">自动选择最高画质<input type="checkbox" id="Auto-Quality" ${util.getValue('auto_select_video_highest_quality') ? 'checked' : ''} class="player-adjustment-setting-checkbox" style="width:auto!important;"></label>
-                      </div>
-                      `;
+                        <span class="player-adjustment-setting-tips"> -> 若遇到不能自动选择播放器模式可尝试点击重置</span>
+                        <label class="player-adjustment-setting-label">
+                            自动选择最高画质
+                            <input type="checkbox" id="Auto-Quality" ${util.getValue('auto_select_video_highest_quality') ? 'checked' : '' } class="player-adjustment-setting-checkbox" >
+                        </label>
+                    </div>
+                    `;
                 Swal.fire({
                     title: '播放页调整设置',
                     html,
@@ -189,14 +237,16 @@ $(function() {
                     footer: '<div style="text-align: center;">如果发现脚本不能用，说明你的播放页面已经更新为新版。<br>目前此脚本不适用新版播放页面， 因为我的两个号都还没收到新版播放页面的推送， 所以暂时没法适配， 等我收到更新后会第一时间适配。</div><hr style="border: none;height: 1px;margin: 12px 0;background: #eaeaea;"><div style="text-align: center;font-size: 1.25em;"><a href="//userstyles.world/style/241/nightmode-for-bilibili-com" target="_blank">夜间哔哩 - </a><a href="//greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8" target="_blank">检查更新</a></div>',
                 }).then((res) => {
                     res.isConfirmed && location.reload(true);
-                    if (result.isConfirmed) {
+                    if (res.isConfirmed) {
                         location.reload(true)
-                    } else if (result.isDenied) {
+                    } else if (res.isDenied) {
                         util.setValue('current_screen_mod', 'normal');
                         location.reload(true);
                     }
                 });
-
+                $('#Is-Vip').change((e) => {
+                    util.setValue('auto_select_video_highest_quality', e.target.checked);
+                });
                 $('#Top-Offset').change((e) => {
                     util.setValue('top_offset', e.target.value);
                 });
@@ -215,18 +265,21 @@ $(function() {
         },
         addPluginStyle() {
             let style = `
-            .swal2-popup{width: 34em;}
-            .swal2-html-container{margin: 0;padding: 16px 5px 0;width: 100%;box-sizing: border-box;}
-            .swal2-footer{flex-direction: column;}
-            .swal2-close{top: 5px;right: 3px;}
-            .swal2-actions{margin: 7px auto 0;}
+            .swal2-popup{width: 34em !important;padding: 1.25em !important;}
+            .swal2-html-container{margin: 0 !important;padding: 16px 5px 0 !important;width: 100% !important;box-sizing: border-box !important;}
+            .swal2-footer{flex-direction: column !important;}
+            .swal2-close{top: 5px !important;right: 3px !important;}
+            .swal2-actions{margin: 7px auto 0 !important;}
+            .swal2-styled.swal2-confirm{background-color: #23ADE5 !important;}
             .swal2-icon.swal2-info.swal2-icon-show{display: none !important;}
-            .player-adjustment-container,.swal2-container { z-index: 999999999!important }
+            .player-adjustment-container,.swal2-container { z-index: 999999999 !important;}
             .player-adjustment-popup { font-size: 14px !important }
-            .player-adjustment-setting-label { display: flex;align-items: center;justify-content: space-between;padding-top: 20px; }
-            .player-adjustment-setting-checkbox { width: 16px;height: 16px; }
-            .player-adjustment-setting-tips{width: 100%;display: flex;align-items: center;padding: 5px;margin-top: 10px;background: #f5f5f5;box-sizing: border-box;color: #666;border-radius: 2px;text-align: left;}
-            .player-adjustment-setting-tips svg{margin-right: 5px}
+            .player-adjustment-setting-label { display: flex !important;align-items: center !important;justify-content: space-between !important;padding-top: 20px !important; }
+            .player-adjustment-setting-checkbox { width: 16px !important;height: 16px !important; }
+            .player-adjustment-setting-tips{width: 100% !important;display: flex !important;align-items: center !important;padding: 5px !important;margin-top: 10px !important;background: #f5f5f5 !important;box-sizing: border-box !important;color: #666 !important;border-radius: 2px !important;text-align: left !important;}
+            .player-adjustment-setting-tips svg{margin-right: 5px !important}
+            label.player-adjustment-setting-label input{border: 1px solid #cecece!important;background: #ffffff!important;}
+            label.player-adjustment-setting-label input:checked{border-color: #1986b3!important;background: #23ADE5!important;}
             `;
             if (document.head) {
                 util.addStyle('swal-pub-style', 'style', GM_getResourceText('swalStyle'));
@@ -239,6 +292,7 @@ $(function() {
             headObserver.observe(document.head, { childList: true, subtree: true });
         },
         applySetting() {
+            console.log('top_offset: ' + util.getValue('top_offset'), "\n", 'is_vip: ' + util.getValue('is_vip'), "\n", 'click_player_auto_location: ' + util.getValue('click_player_auto_location'), "\n", 'current_screen_mod: ' + util.getValue('current_screen_mod'), "\n", 'selected_screen_mod: ' + util.getValue('selected_screen_mod'), "\n", 'auto_select_video_highest_quality: ' + util.getValue('auto_select_video_highest_quality'));
             let applyChange = setInterval(() => {
                 let selected_screen_mod = util.getValue('selected_screen_mod');
                 if (util.exist('#playerWrap #bilibiliPlayer')) {
@@ -263,7 +317,7 @@ $(function() {
                         }
                     }
                 }
-            }, 1000);
+            }, 500);
         },
         isTopWindow() {
             return window.self === window.top;
