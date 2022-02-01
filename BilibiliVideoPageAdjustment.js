@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.5.1
+// @version           0.5.3
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -332,7 +332,7 @@ $(function () {
           }
         })
         $('#Is-Vip').change((e) => {
-          util.setValue('auto_select_video_highest_quality', e.target.checked)
+          util.setValue('is_vip', e.target.checked)
         })
         $('#Top-Offset').change((e) => {
           util.setValue('offset_top', e.target.value)
@@ -461,6 +461,22 @@ $(function () {
         $('html,body').scrollTop(player_offset_top - offset_top)
       })
     },
+    removeBigVipMask () {
+      const bigVipObersver = new MutationObserver(() => {
+        if (util.exist('.bili-dialog-m')) {
+          $('.bili-dialog-m').each(function () {
+            if ($(this).has('.q1080p')) {
+              $(this).remove()
+            }
+          })
+        }
+      })
+      bigVipObersver.observe($('#app')[0], {
+        childList: true,
+        subtree: true,
+        attributes: true
+      })
+    },
     isTopWindow () {
       return window.self === window.top
     },
@@ -469,6 +485,7 @@ $(function () {
       this.addPluginStyle()
       this.getCurrentScreenMod()
       this.applySetting()
+      this.removeBigVipMask()
       this.isTopWindow() && this.registerMenuCommand()
       window.history.pushState = function () {
         main.applySetting()
