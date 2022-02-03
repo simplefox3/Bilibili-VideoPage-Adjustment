@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.5.3
+// @version           0.5.4
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -39,6 +39,9 @@ $(function () {
       style.id = id
       tag === 'style' ? (style.innerHTML = css) : (style.href = css)
       document.head.appendChild(style)
+    },
+    sleep (time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
     },
     getScrollTop () {
       var scroll_top = 0
@@ -404,15 +407,16 @@ $(function () {
         'auto_select_video_highest_quality: ' +
         util.getValue('auto_select_video_highest_quality')
       )
-      const applyChange = setInterval(() => {
+      const applyChange = setInterval(async () => {
         const selected_screen_mod = util.getValue('selected_screen_mod')
         if (util.exist('#playerWrap #bilibiliPlayer')) {
           const playerClass = $('#bilibiliPlayer').attr('class')
           if (util.exist('.bilibili-player-video-control-bottom')) {
             main.insertLocateButton()
-            main.autoLocation()
+            await util.sleep(1000);
             main.autoSelectScreenMod()
             main.autoSelectVideoHightestQuality()
+            main.autoLocation()
             if (
               (selected_screen_mod === 'normal' &&
                 !playerClass.includes('mode-')) ||
@@ -431,9 +435,10 @@ $(function () {
           ).attr('data-screen')
           if (util.exist('.squirtle-controller-wrap')) {
             main.insertLocateButton()
-            main.autoLocation()
+            await util.sleep(1000);
             main.autoSelectScreenMod()
             main.autoSelectVideoHightestQuality()
+            main.autoLocation()
             if (
               (selected_screen_mod === 'normal' &&
                 playerDataScreen === 'normal') ||
