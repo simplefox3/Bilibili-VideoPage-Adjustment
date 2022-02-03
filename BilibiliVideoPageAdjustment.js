@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.5.4
+// @version           0.5.5
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -412,9 +412,9 @@ $(function () {
         if (util.exist('#playerWrap #bilibiliPlayer')) {
           const playerClass = $('#bilibiliPlayer').attr('class')
           if (util.exist('.bilibili-player-video-control-bottom')) {
-            main.insertLocateButton()
-            await util.sleep(1000);
+            main.insertLocateButton()            
             main.autoSelectScreenMod()
+            await util.sleep(1500);
             main.autoSelectVideoHightestQuality()
             main.autoLocation()
             if (
@@ -434,9 +434,9 @@ $(function () {
             '#bilibili-player .bpx-player-container'
           ).attr('data-screen')
           if (util.exist('.squirtle-controller-wrap')) {
-            main.insertLocateButton()
-            await util.sleep(1000);
+            main.insertLocateButton()            
             main.autoSelectScreenMod()
+            await util.sleep(1500);
             main.autoSelectVideoHightestQuality()
             main.autoLocation()
             if (
