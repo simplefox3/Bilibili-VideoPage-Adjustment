@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.5.6
+// @version           0.5.7
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -14,6 +14,7 @@
 // @grant             GM_getValue
 // @grant             GM_registerMenuCommand
 // @grant             GM_getResourceText
+// @grant             GM.info
 // @supportURL        https://github.com/QIUZAIYOU/Bilibili-VideoPage-Adjustment
 // @homepageURL       https://github.com/QIUZAIYOU/Bilibili-VideoPage-Adjustment
 // ==/UserScript==
@@ -391,7 +392,7 @@ $(function () {
     },
     applySetting () {
       console.log(
-        '脚本作者：QIUZAIYOU',
+        '脚本作者：' + GM.info.script.author,
         '\n',
         'offset_top: ' + util.getValue('offset_top'),
         '\n',
@@ -500,7 +501,7 @@ $(function () {
     },
     playerLoadStateWatcher () {
       const playerLoadStateWatcher = setInterval(function () {
-        const playerVideoBtnQualityClass = $('.bilibili-player-video-btn-quality').attr('class')
+        const playerVideoBtnQualityClass = $('.bilibili-player-video-btn-quality').attr('class') || 'NULL'
         // console.log(playerVideoBtnQualityClass);
         if (playerVideoBtnQualityClass.includes('disabled')) {
           location.reload(true)
