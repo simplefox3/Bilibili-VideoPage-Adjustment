@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.5.5
+// @version           0.5.6
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -391,6 +391,8 @@ $(function () {
     },
     applySetting () {
       console.log(
+        '脚本作者：QIUZAIYOU',
+        '\n',
         'offset_top: ' + util.getValue('offset_top'),
         '\n',
         'player_offset_top: ' + util.getValue('player_offset_top'),
@@ -412,7 +414,7 @@ $(function () {
         if (util.exist('#playerWrap #bilibiliPlayer')) {
           const playerClass = $('#bilibiliPlayer').attr('class')
           if (util.exist('.bilibili-player-video-control-bottom')) {
-            main.insertLocateButton()            
+            main.insertLocateButton()
             main.autoSelectScreenMod()
             await util.sleep(1500);
             main.autoSelectVideoHightestQuality()
@@ -434,7 +436,7 @@ $(function () {
             '#bilibili-player .bpx-player-container'
           ).attr('data-screen')
           if (util.exist('.squirtle-controller-wrap')) {
-            main.insertLocateButton()            
+            main.insertLocateButton()
             main.autoSelectScreenMod()
             await util.sleep(1500);
             main.autoSelectVideoHightestQuality()
@@ -467,20 +469,45 @@ $(function () {
       })
     },
     removeBigVipMask () {
-      const bigVipObersver = new MutationObserver(() => {
+      const bigVipObserver = new MutationObserver(() => {
         if (util.exist('.bili-dialog-m')) {
           $('.bili-dialog-m').each(function () {
             if ($(this).has('.q1080p')) {
               $(this).remove()
+              console.log('已去除开通大会员提醒');
             }
           })
         }
       })
-      bigVipObersver.observe($('#app')[0], {
+      bigVipObserver.observe($('#app')[0], {
         childList: true,
         subtree: true,
         attributes: true
       })
+    },
+    autoCancelMute () {
+      const muteObserver = setInterval(() => {
+        const cancelMuteButtn = $('[aria-label="取消静音"]')
+        const cancelMuteButtnDisplay = cancelMuteButtn.css('display')
+        if (cancelMuteButtnDisplay === 'inline') {
+          cancelMuteButtn.click()
+          console.log('已自动取消静音');
+        }
+        if (cancelMuteButtnDisplay === 'none') {
+          clearInterval(muteObserver)
+        }
+      }, 1000)
+    },
+    playerLoadStateWatcher () {
+      const playerLoadStateWatcher = setInterval(function () {
+        const playerVideoBtnQualityClass = $('.bilibili-player-video-btn-quality').attr('class')
+        // console.log(playerVideoBtnQualityClass);
+        if (playerVideoBtnQualityClass.includes('disabled')) {
+          location.reload(true)
+        } else {
+          clearInterval(playerLoadStateWatcher)
+        }
+      }, 1000)
     },
     isTopWindow () {
       return window.self === window.top
@@ -488,9 +515,12 @@ $(function () {
     init () {
       this.initValue()
       this.addPluginStyle()
+      this.playerLoadStateWatcher()
       this.getCurrentScreenMod()
       this.applySetting()
       this.removeBigVipMask()
+      this.playerLoadStateWatcher()
+      this.autoCancelMute()
       this.isTopWindow() && this.registerMenuCommand()
       window.history.pushState = function () {
         main.applySetting()
