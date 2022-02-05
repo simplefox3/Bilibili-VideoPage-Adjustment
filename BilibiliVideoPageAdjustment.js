@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.5.8
+// @version           0.5.9
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -129,34 +129,38 @@ $(function () {
     getCurrentScreenMod () {
       if (util.exist('#playerWrap #bilibiliPlayer')) {
         const playerClass = $('#bilibiliPlayer').attr('class')
-        const mutationObserver = new MutationObserver(() => {
-          if (playerClass.includes('mode-widescreen')) {
-            util.setValue('current_screen_mod', 'widescreen')
-          }
-          if (playerClass.includes('mode-webfullscreen')) {
-            util.setValue('current_screen_mod', 'webfullscreen')
-          }
+        const screenModObserver = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (playerClass.includes('mode-widescreen')) {
+              util.setValue('current_screen_mod', 'widescreen')
+            }
+            if (playerClass.includes('mode-webfullscreen')) {
+              util.setValue('current_screen_mod', 'webfullscreen')
+            }
+          })
         })
-        mutationObserver.observe($('#bilibiliPlayer')[0], {
+        screenModObserver.observe($('#bilibiliPlayer')[0], {
           attributes: true
         })
       }
       if (util.exist('#player_module #bilibili-player')) {
-        const mutationObserver = new MutationObserver(() => {
-          const playerDataScreen = $(
-            '#bilibili-player .bpx-player-container'
-          ).attr('data-screen')
-          if (playerDataScreen === 'normal') {
-            util.setValue('current_screen_mod', 'normal')
-          }
-          if (playerDataScreen === 'wide') {
-            util.setValue('current_screen_mod', 'widescreen')
-          }
-          if (playerDataScreen === 'web') {
-            util.setValue('current_screen_mod', 'webfullscreen')
-          }
+        const playerDataScreen = $(
+          '#bilibili-player .bpx-player-container'
+        ).attr('data-screen')
+        const screenModObserver = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (playerDataScreen === 'normal') {
+              util.setValue('current_screen_mod', 'normal')
+            }
+            if (playerDataScreen === 'wide') {
+              util.setValue('current_screen_mod', 'widescreen')
+            }
+            if (playerDataScreen === 'web') {
+              util.setValue('current_screen_mod', 'webfullscreen')
+            }
+          })
         })
-        mutationObserver.observe($('#bilibili-player')[0], {
+        screenModObserver.observe($('#bilibili-player')[0], {
           attributes: true
         })
       }
@@ -187,6 +191,7 @@ $(function () {
         ) {
           $('[data-text="网页全屏"]').click()
         }
+        main.autoLocation()
       }
       if (util.exist('#player_module #bilibili-player')) {
         // console.log('b', current_screen_mod, selected_screen_mod);
@@ -217,6 +222,7 @@ $(function () {
             '.squirtle-pagefullscreen-wrap.squirtle-video-pagefullscreen'
           ).click()
         }
+        main.autoLocation()
       }
     },
     autoSelectVideoHightestQuality () {
@@ -423,15 +429,13 @@ $(function () {
             main.autoSelectScreenMod()
             await util.sleep(1500);
             main.autoSelectVideoHightestQuality()
-            main.autoLocation()
             if (
               (selected_screen_mod === 'normal' &&
                 !playerClass.includes('mode-')) ||
               (selected_screen_mod === 'widescreen' &&
                 playerClass.includes('mode-widescreen')) ||
               (selected_screen_mod === 'webfullscreen' &&
-                playerClass.includes('mode-webfullscreen'))
-            ) {
+                playerClass.includes('mode-webfullscreen'))) {
               clearInterval(applyChange)
             }
           }
@@ -445,7 +449,6 @@ $(function () {
             main.autoSelectScreenMod()
             await util.sleep(1500);
             main.autoSelectVideoHightestQuality()
-            main.autoLocation()
             if (
               (selected_screen_mod === 'normal' &&
                 playerDataScreen === 'normal') ||
@@ -474,15 +477,17 @@ $(function () {
       })
     },
     removeBigVipMask () {
-      const bigVipObserver = new MutationObserver(() => {
-        if (util.exist('.bili-dialog-m')) {
-          $('.bili-dialog-m').each(function () {
-            if ($(this).has('.q1080p')) {
-              $(this).remove()
-              console.log('BiliBili播放页调整：已去除开通大会员提醒');
-            }
-          })
-        }
+      const bigVipObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (util.exist('.bili-dialog-m')) {
+            $('.bili-dialog-m').each(function () {
+              if ($(this).has('.q1080p')) {
+                $(this).remove()
+                console.log('BiliBili播放页调整：已去除开通大会员提醒');
+              }
+            })
+          }
+        })
       })
       bigVipObserver.observe($('#app')[0], {
         childList: true,
@@ -504,13 +509,22 @@ $(function () {
       }, 1000)
     },
     playerLoadStateWatcher () {
-      const playerLoadStateWatcher = setInterval(function () {
+      const playerLoadStateWatcher1 = setInterval(function () {
         const playerVideoBtnQualityClass = $('.bilibili-player-video-btn-quality').attr('class') || 'NULL'
         // console.log(playerVideoBtnQualityClass);
         if (playerVideoBtnQualityClass.includes('disabled')) {
           location.reload(true)
         } else {
-          clearInterval(playerLoadStateWatcher)
+          // clearInterval(playerLoadStateWatcher1)
+        }
+      }, 1000)
+      const playerLoadStateWatcher2 = setInterval(function () {
+        const playerVideoLength = $('.bilibili-player-video').children().length
+        // console.log(playerVideoLength);
+        if (playerVideoLength === 0) {
+          location.reload(true)
+        } else {
+          clearInterval(playerLoadStateWatcher2)
         }
       }, 1000)
     },
