@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.6.0
+// @version           0.6.1
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -509,25 +509,6 @@ $(function () {
         $('html,body').scrollTop(player_offset_top - offset_top)
       })
     },
-    removeBigVipMask () {
-      const bigVipObserver = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-          if (util.exist('.bili-dialog-m')) {
-            $('.bili-dialog-m').each(function () {
-              if ($(this).has('.q1080p')) {
-                $(this).remove()
-                console.log('BiliBili播放页调整：已去除开通大会员提醒');
-              }
-            })
-          }
-        })
-      })
-      bigVipObserver.observe($('#app')[0], {
-        childList: true,
-        subtree: true,
-        attributes: true
-      })
-    },
     autoCancelMute () {
       const muteObserver = setInterval(() => {
         const cancelMuteButtn = $('[aria-label="取消静音"]')
@@ -592,7 +573,6 @@ $(function () {
       this.playerLoadStateWatcher()
       this.getCurrentScreenMod()
       this.applySetting()
-      this.removeBigVipMask()
       this.playerLoadStateWatcher()
       this.autoCancelMute()
       this.isTopWindow() && this.registerMenuCommand()
