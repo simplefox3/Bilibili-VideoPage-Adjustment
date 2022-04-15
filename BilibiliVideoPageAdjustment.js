@@ -2,7 +2,7 @@
 // @name              BiliBili播放页调整
 // @license           GPL-3.0 License
 // @namespace         https://greasyfork.org/zh-CN/scripts/415804-bilibili%E6%92%AD%E6%94%BE%E9%A1%B5%E8%B0%83%E6%95%B4-%E8%87%AA%E7%94%A8
-// @version           0.6.6
+// @version           0.6.7
 // @description       1.自动定位到播放器（进入播放页，可自动定位到播放器，可设置偏移量及是否在点击主播放器时定位）；2.可设置是否自动选择最高画质；3.可设置播放器默认模式；
 // @author            QIAN
 // @match             *://*.bilibili.com/video/*
@@ -377,7 +377,7 @@ $(function () {
             : ''
           } class="player-adjustment-setting-checkbox" >
                       </label>
-                      <span class="player-adjustment-setting-tips"> -> 网络条件好时可以启用此项，自动选择最高是将选择4K画质，否则选择除4K外最高画质。</span>
+                      <span class="player-adjustment-setting-tips"> -> 网络条件好时可以启用此项，自动选择最高画质时将选择4K画质，否则选择除4K外最高画质。</span>
                   </div>
                   `
         Swal.fire({
